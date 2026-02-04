@@ -1,46 +1,26 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import * as mysql from 'mysql2/promise';
 import { seedBeds } from './seed-beds';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
-      useFactory: async (): Promise<TypeOrmModuleOptions> => {
-        const host = process.env.DB_HOST ?? 'localhost';
-        const port = parseInt(process.env.DB_PORT ?? '3306', 10);
-        const username = process.env.DB_USER ?? 'root';
-        const password = process.env.DB_PASS ?? 'root@123';
-        const database = process.env.DB_NAME ?? 'smart_bed';
-
-        // Ensure database exists (create if missing) before TypeORM connects
-        try {
-          const connection = await mysql.createConnection({
-            host,
-            port,
-            user: username,
-            password,
-          });
-          await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\``);
-          await connection.end();
-        } catch (err) {
-          // If creation fails, log and rethrow so startup fails visibly
-          console.error('Failed to create database:', err);
-          throw err;
-        }
-
-        return {
-          type: 'mysql',
-          host,
-          port,
-          username,
-          password,
-          database,
-          autoLoadEntities: true,
-          synchronize: true, // ⚠️ keep only for dev, disable in prod
-        } as TypeOrmModuleOptions;
-      },
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        host: config.get<string>('DB_HOST') || '127.0.0.1',
+        port: parseInt(config.get<string>('DB_PORT') || '5432', 10),
+        username: config.get<string>('DB_USER'),
+        password: config.get<string>('DB_PASSWORD'),
+        database: config.get<string>('DB_NAME'),
+        synchronize: true, // only for dev
+        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        ssl: false, // important for local Docker
+      }),
     }),
   ],
 })
