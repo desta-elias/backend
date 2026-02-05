@@ -31,7 +31,7 @@ async function bootstrap() {
   });
 
   // No global prefix as it's handled by the frontend baseUrl
-  // app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api');
 
   // Global validation pipe this updatei
   app.useGlobalPipes(

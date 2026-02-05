@@ -30,7 +30,7 @@ import { seedBeds } from './seed-beds';
           username,
           password: config.get<string>('DB_PASSWORD'),
           database,
-          synchronize: true, // only for dev
+          synchronize: false, // only for dev
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
           ssl: false, // important for local Docker
         };
