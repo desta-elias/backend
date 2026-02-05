@@ -18,6 +18,7 @@ import { CreateBedDto } from './dto/create-bed.dto';
 import { UpdateBedDto } from './dto/update-bed.dto';
 import { ManualControlDto } from './dto/manual-control.dto';
 import { ScheduleMovementDto } from './dto/schedule-movement.dto';
+import { UpdateBedPositionsDto } from './dto/update-bed-positions.dto';
 
 @Injectable()
 export class BedService {
@@ -95,6 +96,37 @@ export class BedService {
     return this.bedRepository.save(bed);
   }
 
+  async updatePositions(
+    id: number,
+    updatePositionsDto: UpdateBedPositionsDto,
+  ): Promise<Bed> {
+    const bed = await this.findOne(id);
+    const hasAnyField =
+      updatePositionsDto.headPosition !== undefined ||
+      updatePositionsDto.rightTiltPosition !== undefined ||
+      updatePositionsDto.leftTiltPosition !== undefined ||
+      updatePositionsDto.legPosition !== undefined;
+
+    if (!hasAnyField) {
+      throw new BadRequestException('No position fields provided');
+    }
+
+    if (updatePositionsDto.headPosition !== undefined) {
+      bed.headPosition = updatePositionsDto.headPosition;
+    }
+    if (updatePositionsDto.rightTiltPosition !== undefined) {
+      bed.rightTiltPosition = updatePositionsDto.rightTiltPosition;
+    }
+    if (updatePositionsDto.leftTiltPosition !== undefined) {
+      bed.leftTiltPosition = updatePositionsDto.leftTiltPosition;
+    }
+    if (updatePositionsDto.legPosition !== undefined) {
+      bed.legPosition = updatePositionsDto.legPosition;
+    }
+
+    return this.bedRepository.save(bed);
+  }
+
   async remove(id: number): Promise<void> {
     const bed = await this.findOne(id);
     if (bed.status === BedStatus.OCCUPIED) {
@@ -130,6 +162,32 @@ export class BedService {
 
   async unassignBed(bedNumber: string): Promise<Bed> {
     const bed = await this.findByBedNumber(bedNumber);
+
+    if (bed.currentPatient) {
+      const patient = await this.patientRepository.findOne({
+        where: { id: bed.currentPatient.id },
+      });
+      if (patient) {
+        patient.bed = '';
+        await this.patientRepository.save(patient);
+      }
+    }
+
+    bed.currentPatient = null;
+    bed.status = BedStatus.AVAILABLE;
+
+    return this.bedRepository.save(bed);
+  }
+
+  async unassignBedByPatientId(patientId: string): Promise<Bed | null> {
+    const bed = await this.bedRepository.findOne({
+      where: { currentPatient: { id: patientId } },
+      relations: ['currentPatient'],
+    });
+
+    if (!bed) {
+      return null;
+    }
 
     if (bed.currentPatient) {
       const patient = await this.patientRepository.findOne({

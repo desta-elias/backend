@@ -2,12 +2,15 @@ import { DataSource } from 'typeorm';
 import { Bed, BedStatus } from '../bed/entities/bed.entity';
 
 export async function seedBeds(dataSource: DataSource) {
+  if (process.env.SEED_BEDS !== 'true') {
+    return;
+  }
+
   const bedRepository = dataSource.getRepository(Bed);
 
   // Check if beds already exist
   const existingBeds = await bedRepository.count();
   if (existingBeds > 0) {
-    console.log('Beds already seeded. Skipping...');
     return;
   }
 

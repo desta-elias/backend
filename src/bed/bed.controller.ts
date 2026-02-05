@@ -11,6 +11,8 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { BedService } from './bed.service';
 import { CreateBedDto } from './dto/create-bed.dto';
@@ -19,6 +21,7 @@ import { ManualControlDto } from './dto/manual-control.dto';
 import { ScheduleMovementDto } from './dto/schedule-movement.dto';
 import { AssignBedDto } from './dto/assign-bed.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { UpdateBedPositionsDto } from './dto/update-bed-positions.dto';
 
 @Controller('beds')
 @UseGuards(JwtAuthGuard)
@@ -60,6 +63,15 @@ export class BedController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBedDto: UpdateBedDto) {
     return this.bedService.update(+id, updateBedDto);
+  }
+
+  @Patch(':id/positions')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  updatePositions(
+    @Param('id') id: string,
+    @Body() updatePositionsDto: UpdateBedPositionsDto,
+  ) {
+    return this.bedService.updatePositions(+id, updatePositionsDto);
   }
 
   @Delete(':id')

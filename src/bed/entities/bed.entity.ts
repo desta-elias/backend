@@ -65,7 +65,7 @@ export class Bed {
   @Column({ type: 'boolean', default: false })
   emergencyStop: boolean;
 
-  @OneToOne(() => Patient, { nullable: true })
+  @OneToOne(() => Patient, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
   currentPatient: Patient | null;
 

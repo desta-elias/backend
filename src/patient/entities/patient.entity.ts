@@ -33,6 +33,18 @@ export class Patient {
   @Column()
   admitted: string;
 
+  @Column('int', { default: 0 })
+  bedHeadPosition: number;
+
+  @Column('int', { default: 0 })
+  bedLeftPosition: number;
+
+  @Column('int', { default: 0 })
+  bedRightPosition: number;
+
+  @Column('int', { default: 0 })
+  bedTiltPosition: number;
+
   @ManyToOne(() => User, (user) => user.patients, {
     nullable: false,
     onDelete: 'CASCADE',

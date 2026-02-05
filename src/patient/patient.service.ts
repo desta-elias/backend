@@ -30,6 +30,15 @@ export class PatientsService {
     // Then, assign the bed if provided
     if (createDto.bed) {
       try {
+        // Ensure the bed exists; create it if missing
+        try {
+          await this.bedService.findByBedNumber(createDto.bed);
+        } catch (error) {
+          await this.bedService.create({
+            bedNumber: createDto.bed,
+            room: createDto.room,
+          });
+        }
         await this.bedService.assignBed(savedPatient.id, createDto.bed);
       } catch (error) {
         // If bed assignment fails, we should still return the patient
@@ -79,6 +88,7 @@ export class PatientsService {
     if (!patient) throw new NotFoundException('Patient not found');
     if (patient.user && patient.user.id !== userId)
       throw new ForbiddenException();
+    await this.bedService.unassignBedByPatientId(id);
     await this.patientsRepository.delete(id);
   }
 }
