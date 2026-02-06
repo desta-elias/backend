@@ -20,9 +20,9 @@ import { ManualControlDto } from './dto/manual-control.dto';
 import { ScheduleMovementDto } from './dto/schedule-movement.dto';
 import { UpdateBedPositionsDto } from './dto/update-bed-positions.dto';
 
-type BedCommandDirection = 'forward' | 'backward' | 'stop';
+export type BedCommandDirection = 'forward' | 'backward' | 'stop';
 
-interface BedCommand {
+export interface BedCommand {
   motorType: MotorType;
   direction: BedCommandDirection;
   mappedStep: number | null;
