@@ -22,6 +22,7 @@ import { ScheduleMovementDto } from './dto/schedule-movement.dto';
 import { AssignBedDto } from './dto/assign-bed.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { UpdateBedPositionsDto } from './dto/update-bed-positions.dto';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('beds')
 @UseGuards(JwtAuthGuard)
@@ -67,6 +68,7 @@ export class BedController {
 
   @Patch(':id/positions')
   @UsePipes(new ValidationPipe({ whitelist: true }))
+  @Public()
   updatePositions(
     @Param('id') id: string,
     @Body() updatePositionsDto: UpdateBedPositionsDto,

@@ -19,7 +19,10 @@ export class PatientsService {
     private bedService: BedService,
   ) {}
 
-  async create(userId: number, createDto: CreatePatientDto): Promise<Patient> {
+  async create(
+    userId: number,
+    createDto: CreatePatientDto,
+  ): Promise<Patient & { bedId?: number; bedNumber?: string }> {
     // First, create the patient
     const patient = this.patientsRepository.create({
       ...createDto,
@@ -28,6 +31,9 @@ export class PatientsService {
     const savedPatient = await this.patientsRepository.save(patient);
 
     // Then, assign the bed if provided
+    let assignedBedId: number | undefined;
+    let assignedBedNumber: string | undefined;
+
     if (createDto.bed) {
       try {
         // Ensure the bed exists; create it if missing
@@ -40,6 +46,11 @@ export class PatientsService {
           });
         }
         await this.bedService.assignBed(savedPatient.id, createDto.bed);
+        const assignedBed = await this.bedService.findByBedNumber(
+          createDto.bed,
+        );
+        assignedBedId = assignedBed.id;
+        assignedBedNumber = assignedBed.bedNumber;
       } catch (error) {
         // If bed assignment fails, we should still return the patient
         // but you might want to handle this differently based on your requirements
@@ -49,7 +60,11 @@ export class PatientsService {
       }
     }
 
-    return savedPatient;
+    return {
+      ...savedPatient,
+      bedId: assignedBedId,
+      bedNumber: assignedBedNumber ?? savedPatient.bed,
+    };
   }
 
   async findAll(userId: number): Promise<Patient[]> {
