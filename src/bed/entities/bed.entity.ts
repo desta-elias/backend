@@ -50,28 +50,28 @@ export class Bed {
   notes: string;
 
   // Motor positions (0-100 scale, 0 = fully retracted, 100 = fully extended)
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'double precision', default: 0 })
   headPosition: number;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'double precision', default: 0 })
   previousHeadPosition: number;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'double precision', default: 0 })
   rightTiltPosition: number;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'double precision', default: 0 })
   previousRightTiltPosition: number;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'double precision', default: 0 })
   leftTiltPosition: number;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'double precision', default: 0 })
   previousLeftTiltPosition: number;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'double precision', default: 0 })
   legPosition: number;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'double precision', default: 0 })
   previousLegPosition: number;
 
   @Column({ type: 'boolean', default: false })

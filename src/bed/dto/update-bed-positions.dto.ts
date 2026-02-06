@@ -1,26 +1,26 @@
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsNumber, IsOptional, Max, Min } from 'class-validator';
 
 export class UpdateBedPositionsDto {
   @IsOptional()
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   @Max(100)
   headPosition?: number;
 
   @IsOptional()
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   @Max(100)
   rightTiltPosition?: number;
 
   @IsOptional()
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   @Max(100)
   leftTiltPosition?: number;
 
   @IsOptional()
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   @Max(100)
   legPosition?: number;
