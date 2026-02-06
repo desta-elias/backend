@@ -32,6 +32,8 @@ import { seedBeds } from './seed-beds';
           database,
           synchronize: false, // only for dev
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+          migrations: [__dirname + '/../migrations/*{.ts,.js}'],
+          migrationsRun: true,
           ssl: false, // important for local Docker
         };
       },
