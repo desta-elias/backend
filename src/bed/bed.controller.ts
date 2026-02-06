@@ -55,6 +55,20 @@ export class BedController {
     return this.bedService.findOne(+id);
   }
 
+  @Get(':id/positions')
+  @Public()
+  getPositions(@Param('id') id: string) {
+    return this.bedService.findOne(+id).then((bed) => ({
+      id: bed.id,
+      bedNumber: bed.bedNumber,
+      headPosition: bed.headPosition,
+      rightTiltPosition: bed.rightTiltPosition,
+      leftTiltPosition: bed.leftTiltPosition,
+      legPosition: bed.legPosition,
+      updatedAt: bed.updatedAt,
+    }));
+  }
+
   @Get(':id/history')
   getBedHistory(@Param('id') id: string, @Query('limit') limit?: string) {
     const limitNum = limit ? parseInt(limit) : 50;
