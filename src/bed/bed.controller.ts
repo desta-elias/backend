@@ -65,6 +65,24 @@ export class BedController {
       rightTiltPosition: bed.rightTiltPosition,
       leftTiltPosition: bed.leftTiltPosition,
       legPosition: bed.legPosition,
+      direction: {
+        head: this.getDirectionLabel(
+          bed.previousHeadPosition,
+          bed.headPosition,
+        ),
+        rightTilt: this.getDirectionLabel(
+          bed.previousRightTiltPosition,
+          bed.rightTiltPosition,
+        ),
+        leftTilt: this.getDirectionLabel(
+          bed.previousLeftTiltPosition,
+          bed.leftTiltPosition,
+        ),
+        leg: this.getDirectionLabel(
+          bed.previousLegPosition,
+          bed.legPosition,
+        ),
+      },
       updatedAt: bed.updatedAt,
     }));
   }
@@ -88,6 +106,16 @@ export class BedController {
     @Body() updatePositionsDto: UpdateBedPositionsDto,
   ) {
     return this.bedService.updatePositions(+id, updatePositionsDto);
+  }
+
+  private getDirectionLabel(previousPosition: number, newPosition: number) {
+    if (newPosition > previousPosition) {
+      return 'forward';
+    }
+    if (newPosition < previousPosition) {
+      return 'backward';
+    }
+    return 'stop';
   }
 
   @Delete(':id')

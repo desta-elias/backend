@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Patient } from './entities/patient.entity';
+import { PatientHistory } from './entities/patient-history.entity';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { BedService } from '../bed/bed.service';
@@ -16,6 +17,8 @@ export class PatientsService {
   constructor(
     @InjectRepository(Patient)
     private patientsRepository: Repository<Patient>,
+    @InjectRepository(PatientHistory)
+    private patientHistoryRepository: Repository<PatientHistory>,
     private bedService: BedService,
   ) {}
 
@@ -103,6 +106,24 @@ export class PatientsService {
     if (!patient) throw new NotFoundException('Patient not found');
     if (patient.user && patient.user.id !== userId)
       throw new ForbiddenException();
+
+    const history = this.patientHistoryRepository.create({
+      patientId: patient.id,
+      name: patient.name,
+      bed: patient.bed,
+      room: patient.room,
+      condition: patient.condition,
+      age: patient.age,
+      gender: patient.gender,
+      admitted: patient.admitted,
+      bedHeadPosition: patient.bedHeadPosition,
+      bedLeftPosition: patient.bedLeftPosition,
+      bedRightPosition: patient.bedRightPosition,
+      bedTiltPosition: patient.bedTiltPosition,
+      user: patient.user ? { id: patient.user.id } as any : null,
+    });
+    await this.patientHistoryRepository.save(history);
+
     await this.bedService.unassignBedByPatientId(id);
     await this.patientsRepository.delete(id);
   }
