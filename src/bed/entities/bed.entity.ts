@@ -54,13 +54,25 @@ export class Bed {
   headPosition: number;
 
   @Column({ type: 'integer', default: 0 })
+  previousHeadPosition: number;
+
+  @Column({ type: 'integer', default: 0 })
   rightTiltPosition: number;
+
+  @Column({ type: 'integer', default: 0 })
+  previousRightTiltPosition: number;
 
   @Column({ type: 'integer', default: 0 })
   leftTiltPosition: number;
 
   @Column({ type: 'integer', default: 0 })
+  previousLeftTiltPosition: number;
+
+  @Column({ type: 'integer', default: 0 })
   legPosition: number;
+
+  @Column({ type: 'integer', default: 0 })
+  previousLegPosition: number;
 
   @Column({ type: 'boolean', default: false })
   emergencyStop: boolean;
