@@ -39,24 +39,18 @@ export class PatientsService {
 
     if (createDto.bed) {
       try {
-        // Ensure the bed exists; create it if missing
-        try {
-          await this.bedService.findByBedNumber(createDto.bed);
-        } catch (error) {
-          await this.bedService.create({
-            bedNumber: createDto.bed,
-            room: createDto.room,
-          });
-        }
-        await this.bedService.assignBed(savedPatient.id, createDto.bed);
         const assignedBed = await this.bedService.findByBedNumber(
           createDto.bed,
         );
+        if (String(assignedBed.id) !== assignedBed.bedNumber) {
+          throw new BadRequestException(
+            'Bed number must match bed id. Fix the bed record before assigning.',
+          );
+        }
+        await this.bedService.assignBed(savedPatient.id, createDto.bed);
         assignedBedId = assignedBed.id;
         assignedBedNumber = assignedBed.bedNumber;
       } catch (error) {
-        // If bed assignment fails, we should still return the patient
-        // but you might want to handle this differently based on your requirements
         throw new BadRequestException(
           `Patient created but bed assignment failed: ${error.message}`,
         );
