@@ -10,8 +10,8 @@ export class InterchangeForwardBackward1760000000001 implements MigrationInterfa
     // headDirection
     await queryRunner.query(
       `UPDATE "beds" SET "headDirection" = CASE 
-        WHEN "headDirection" = 'forward' THEN 'backward'::beds_headDirection_enum
-        WHEN "headDirection" = 'backward' THEN 'forward'::beds_headDirection_enum
+        WHEN "headDirection" = 'forward' THEN 'backward'
+        WHEN "headDirection" = 'backward' THEN 'forward'
         ELSE "headDirection"
       END`,
     );
@@ -19,8 +19,8 @@ export class InterchangeForwardBackward1760000000001 implements MigrationInterfa
     // rightTiltDirection
     await queryRunner.query(
       `UPDATE "beds" SET "rightTiltDirection" = CASE 
-        WHEN "rightTiltDirection" = 'forward' THEN 'backward'::beds_rightTiltDirection_enum
-        WHEN "rightTiltDirection" = 'backward' THEN 'forward'::beds_rightTiltDirection_enum
+        WHEN "rightTiltDirection" = 'forward' THEN 'backward'
+        WHEN "rightTiltDirection" = 'backward' THEN 'forward'
         ELSE "rightTiltDirection"
       END`,
     );
@@ -28,8 +28,8 @@ export class InterchangeForwardBackward1760000000001 implements MigrationInterfa
     // leftTiltDirection
     await queryRunner.query(
       `UPDATE "beds" SET "leftTiltDirection" = CASE 
-        WHEN "leftTiltDirection" = 'forward' THEN 'backward'::beds_leftTiltDirection_enum
-        WHEN "leftTiltDirection" = 'backward' THEN 'forward'::beds_leftTiltDirection_enum
+        WHEN "leftTiltDirection" = 'forward' THEN 'backward'
+        WHEN "leftTiltDirection" = 'backward' THEN 'forward'
         ELSE "leftTiltDirection"
       END`,
     );
@@ -37,8 +37,8 @@ export class InterchangeForwardBackward1760000000001 implements MigrationInterfa
     // legDirection
     await queryRunner.query(
       `UPDATE "beds" SET "legDirection" = CASE 
-        WHEN "legDirection" = 'forward' THEN 'backward'::beds_legDirection_enum
-        WHEN "legDirection" = 'backward' THEN 'forward'::beds_legDirection_enum
+        WHEN "legDirection" = 'forward' THEN 'backward'
+        WHEN "legDirection" = 'backward' THEN 'forward'
         ELSE "legDirection"
       END`,
     );
@@ -50,8 +50,8 @@ export class InterchangeForwardBackward1760000000001 implements MigrationInterfa
     // headDirection
     await queryRunner.query(
       `UPDATE "beds" SET "headDirection" = CASE 
-        WHEN "headDirection" = 'forward' THEN 'backward'::beds_headDirection_enum
-        WHEN "headDirection" = 'backward' THEN 'forward'::beds_headDirection_enum
+        WHEN "headDirection" = 'forward' THEN 'backward'
+        WHEN "headDirection" = 'backward' THEN 'forward'
         ELSE "headDirection"
       END`,
     );
@@ -59,8 +59,8 @@ export class InterchangeForwardBackward1760000000001 implements MigrationInterfa
     // rightTiltDirection
     await queryRunner.query(
       `UPDATE "beds" SET "rightTiltDirection" = CASE 
-        WHEN "rightTiltDirection" = 'forward' THEN 'backward'::beds_rightTiltDirection_enum
-        WHEN "rightTiltDirection" = 'backward' THEN 'forward'::beds_rightTiltDirection_enum
+        WHEN "rightTiltDirection" = 'forward' THEN 'backward'
+        WHEN "rightTiltDirection" = 'backward' THEN 'forward'
         ELSE "rightTiltDirection"
       END`,
     );
@@ -68,8 +68,8 @@ export class InterchangeForwardBackward1760000000001 implements MigrationInterfa
     // leftTiltDirection
     await queryRunner.query(
       `UPDATE "beds" SET "leftTiltDirection" = CASE 
-        WHEN "leftTiltDirection" = 'forward' THEN 'backward'::beds_leftTiltDirection_enum
-        WHEN "leftTiltDirection" = 'backward' THEN 'forward'::beds_leftTiltDirection_enum
+        WHEN "leftTiltDirection" = 'forward' THEN 'backward'
+        WHEN "leftTiltDirection" = 'backward' THEN 'forward'
         ELSE "leftTiltDirection"
       END`,
     );
@@ -77,8 +77,8 @@ export class InterchangeForwardBackward1760000000001 implements MigrationInterfa
     // legDirection
     await queryRunner.query(
       `UPDATE "beds" SET "legDirection" = CASE 
-        WHEN "legDirection" = 'forward' THEN 'backward'::beds_legDirection_enum
-        WHEN "legDirection" = 'backward' THEN 'forward'::beds_legDirection_enum
+        WHEN "legDirection" = 'forward' THEN 'backward'
+        WHEN "legDirection" = 'backward' THEN 'forward'
         ELSE "legDirection"
       END`,
     );
