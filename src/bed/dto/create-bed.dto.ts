@@ -3,7 +3,8 @@ import { BedStatus } from '../entities/bed.entity';
 
 export class CreateBedDto {
   @IsString()
-  bedNumber: string;
+  @IsOptional()
+  bedNumber?: string;
 
   @IsString()
   room: string;

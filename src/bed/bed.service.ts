@@ -54,16 +54,27 @@ export class BedService {
   }
 
   async create(createBedDto: CreateBedDto): Promise<Bed> {
-    const existingBed = await this.bedRepository.findOne({
-      where: { bedNumber: createBedDto.bedNumber },
-    });
+    // If bedNumber is provided, validate it's not already taken
+    if (createBedDto.bedNumber) {
+      const existingBed = await this.bedRepository.findOne({
+        where: { bedNumber: createBedDto.bedNumber },
+      });
 
-    if (existingBed) {
-      throw new ConflictException('Bed number already exists');
+      if (existingBed) {
+        throw new ConflictException('Bed number already exists');
+      }
     }
 
-    const bed = this.bedRepository.create(createBedDto);
-    return this.bedRepository.save(bed);
+    // Create bed without bedNumber first to get the auto-generated id
+    const bed = this.bedRepository.create({
+      ...createBedDto,
+      bedNumber: undefined, // Temporarily set to undefined
+    });
+    const savedBed = await this.bedRepository.save(bed);
+
+    // Now set bedNumber to match the id
+    savedBed.bedNumber = savedBed.id.toString();
+    return this.bedRepository.save(savedBed);
   }
 
   async findAll(): Promise<Bed[]> {
@@ -108,7 +119,17 @@ export class BedService {
 
   async update(id: number, updateBedDto: UpdateBedDto): Promise<Bed> {
     const bed = await this.findOne(id);
-    Object.assign(bed, updateBedDto);
+    
+    // Prevent changing bedNumber - it must always match the id
+    if (updateBedDto.bedNumber && updateBedDto.bedNumber !== bed.id.toString()) {
+      throw new BadRequestException(
+        'Bed number cannot be changed and must match bed id',
+      );
+    }
+    
+    // Remove bedNumber from update to prevent any changes
+    const { bedNumber, ...safeUpdateDto } = updateBedDto;
+    Object.assign(bed, safeUpdateDto);
     return this.bedRepository.save(bed);
   }
 
