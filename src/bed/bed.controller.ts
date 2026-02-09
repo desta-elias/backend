@@ -66,22 +66,30 @@ export class BedController {
       leftTiltPosition: bed.leftTiltPosition,
       legPosition: bed.legPosition,
       direction: {
-        head: this.getDirectionLabel(
-          bed.previousHeadPosition,
-          bed.headPosition,
-        ),
-        rightTilt: this.getDirectionLabel(
-          bed.previousRightTiltPosition,
-          bed.rightTiltPosition,
-        ),
-        leftTilt: this.getDirectionLabel(
-          bed.previousLeftTiltPosition,
-          bed.leftTiltPosition,
-        ),
-        leg: this.getDirectionLabel(
-          bed.previousLegPosition,
-          bed.legPosition,
-        ),
+        head:
+          bed.headDirection ??
+          this.getDirectionLabel(
+            bed.previousHeadPosition,
+            bed.headPosition,
+          ),
+        rightTilt:
+          bed.rightTiltDirection ??
+          this.getDirectionLabel(
+            bed.previousRightTiltPosition,
+            bed.rightTiltPosition,
+          ),
+        leftTilt:
+          bed.leftTiltDirection ??
+          this.getDirectionLabel(
+            bed.previousLeftTiltPosition,
+            bed.leftTiltPosition,
+          ),
+        leg:
+          bed.legDirection ??
+          this.getDirectionLabel(
+            bed.previousLegPosition,
+            bed.legPosition,
+          ),
       },
       updatedAt: bed.updatedAt,
     }));

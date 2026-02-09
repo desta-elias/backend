@@ -28,6 +28,12 @@ export enum MotorDirection {
   DOWN = 'DOWN',
 }
 
+export enum BedDirection {
+  FORWARD = 'forward',
+  BACKWARD = 'backward',
+  STOP = 'stop',
+}
+
 @Entity('beds')
 export class Bed {
   @PrimaryGeneratedColumn()
@@ -53,11 +59,25 @@ export class Bed {
   @Column({ type: 'double precision', default: 0 })
   headPosition: number;
 
+  @Column({
+    type: 'enum',
+    enum: BedDirection,
+    default: BedDirection.STOP,
+  })
+  headDirection: BedDirection;
+
   @Column({ type: 'double precision', default: 0 })
   previousHeadPosition: number;
 
   @Column({ type: 'double precision', default: 0 })
   rightTiltPosition: number;
+
+  @Column({
+    type: 'enum',
+    enum: BedDirection,
+    default: BedDirection.STOP,
+  })
+  rightTiltDirection: BedDirection;
 
   @Column({ type: 'double precision', default: 0 })
   previousRightTiltPosition: number;
@@ -65,11 +85,25 @@ export class Bed {
   @Column({ type: 'double precision', default: 0 })
   leftTiltPosition: number;
 
+  @Column({
+    type: 'enum',
+    enum: BedDirection,
+    default: BedDirection.STOP,
+  })
+  leftTiltDirection: BedDirection;
+
   @Column({ type: 'double precision', default: 0 })
   previousLeftTiltPosition: number;
 
   @Column({ type: 'double precision', default: 0 })
   legPosition: number;
+
+  @Column({
+    type: 'enum',
+    enum: BedDirection,
+    default: BedDirection.STOP,
+  })
+  legDirection: BedDirection;
 
   @Column({ type: 'double precision', default: 0 })
   previousLegPosition: number;

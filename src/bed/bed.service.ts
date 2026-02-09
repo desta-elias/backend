@@ -8,7 +8,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Repository, MoreThan } from 'typeorm';
-import { Bed, BedStatus, MotorType, MotorDirection } from './entities/bed.entity';
+import {
+  Bed,
+  BedStatus,
+  MotorType,
+  MotorDirection,
+  BedDirection,
+} from './entities/bed.entity';
 import {
   BedMovementHistory,
   MovementType,
@@ -20,7 +26,7 @@ import { ManualControlDto } from './dto/manual-control.dto';
 import { ScheduleMovementDto } from './dto/schedule-movement.dto';
 import { UpdateBedPositionsDto } from './dto/update-bed-positions.dto';
 
-export type BedCommandDirection = 'forward' | 'backward' | 'stop';
+export type BedCommandDirection = BedDirection;
 
 export interface BedCommand {
   motorType: MotorType;
@@ -113,9 +119,13 @@ export class BedService {
     const bed = await this.findOne(id);
     const hasAnyField =
       updatePositionsDto.headPosition !== undefined ||
+      updatePositionsDto.headDirection !== undefined ||
       updatePositionsDto.rightTiltPosition !== undefined ||
+      updatePositionsDto.rightTiltDirection !== undefined ||
       updatePositionsDto.leftTiltPosition !== undefined ||
-      updatePositionsDto.legPosition !== undefined;
+      updatePositionsDto.leftTiltDirection !== undefined ||
+      updatePositionsDto.legPosition !== undefined ||
+      updatePositionsDto.legDirection !== undefined;
 
     if (!hasAnyField) {
       throw new BadRequestException('No position fields provided');
@@ -123,41 +133,95 @@ export class BedService {
 
     const commands: BedCommand[] = [];
 
-    if (updatePositionsDto.headPosition !== undefined) {
+    if (
+      updatePositionsDto.headPosition !== undefined ||
+      updatePositionsDto.headDirection !== undefined
+    ) {
       const previous = bed.headPosition;
-      const next = updatePositionsDto.headPosition;
-      bed.previousHeadPosition = previous;
-      bed.headPosition = updatePositionsDto.headPosition;
-      commands.push(
-        this.buildCommand(MotorType.HEAD, previous, next),
-      );
+      const next =
+        updatePositionsDto.headPosition !== undefined
+          ? updatePositionsDto.headPosition
+          : previous;
+      if (updatePositionsDto.headPosition !== undefined) {
+        bed.previousHeadPosition = previous;
+        bed.headPosition = next;
+      }
+      const direction =
+        updatePositionsDto.headDirection ?? this.getDirectionLabel(previous, next);
+      bed.headDirection = direction;
+      if (updatePositionsDto.headPosition !== undefined) {
+        commands.push(
+          this.buildCommand(MotorType.HEAD, previous, next, direction),
+        );
+      }
     }
-    if (updatePositionsDto.rightTiltPosition !== undefined) {
+    if (
+      updatePositionsDto.rightTiltPosition !== undefined ||
+      updatePositionsDto.rightTiltDirection !== undefined
+    ) {
       const previous = bed.rightTiltPosition;
-      const next = updatePositionsDto.rightTiltPosition;
-      bed.previousRightTiltPosition = previous;
-      bed.rightTiltPosition = updatePositionsDto.rightTiltPosition;
-      commands.push(
-        this.buildCommand(MotorType.RIGHT_TILT, previous, next),
-      );
+      const next =
+        updatePositionsDto.rightTiltPosition !== undefined
+          ? updatePositionsDto.rightTiltPosition
+          : previous;
+      if (updatePositionsDto.rightTiltPosition !== undefined) {
+        bed.previousRightTiltPosition = previous;
+        bed.rightTiltPosition = next;
+      }
+      const direction =
+        updatePositionsDto.rightTiltDirection ??
+        this.getDirectionLabel(previous, next);
+      bed.rightTiltDirection = direction;
+      if (updatePositionsDto.rightTiltPosition !== undefined) {
+        commands.push(
+          this.buildCommand(MotorType.RIGHT_TILT, previous, next, direction),
+        );
+      }
     }
-    if (updatePositionsDto.leftTiltPosition !== undefined) {
+    if (
+      updatePositionsDto.leftTiltPosition !== undefined ||
+      updatePositionsDto.leftTiltDirection !== undefined
+    ) {
       const previous = bed.leftTiltPosition;
-      const next = updatePositionsDto.leftTiltPosition;
-      bed.previousLeftTiltPosition = previous;
-      bed.leftTiltPosition = updatePositionsDto.leftTiltPosition;
-      commands.push(
-        this.buildCommand(MotorType.LEFT_TILT, previous, next),
-      );
+      const next =
+        updatePositionsDto.leftTiltPosition !== undefined
+          ? updatePositionsDto.leftTiltPosition
+          : previous;
+      if (updatePositionsDto.leftTiltPosition !== undefined) {
+        bed.previousLeftTiltPosition = previous;
+        bed.leftTiltPosition = next;
+      }
+      const direction =
+        updatePositionsDto.leftTiltDirection ??
+        this.getDirectionLabel(previous, next);
+      bed.leftTiltDirection = direction;
+      if (updatePositionsDto.leftTiltPosition !== undefined) {
+        commands.push(
+          this.buildCommand(MotorType.LEFT_TILT, previous, next, direction),
+        );
+      }
     }
-    if (updatePositionsDto.legPosition !== undefined) {
+    if (
+      updatePositionsDto.legPosition !== undefined ||
+      updatePositionsDto.legDirection !== undefined
+    ) {
       const previous = bed.legPosition;
-      const next = updatePositionsDto.legPosition;
-      bed.previousLegPosition = previous;
-      bed.legPosition = updatePositionsDto.legPosition;
-      commands.push(
-        this.buildCommand(MotorType.LEG, previous, next),
-      );
+      const next =
+        updatePositionsDto.legPosition !== undefined
+          ? updatePositionsDto.legPosition
+          : previous;
+      if (updatePositionsDto.legPosition !== undefined) {
+        bed.previousLegPosition = previous;
+        bed.legPosition = next;
+      }
+      const direction =
+        updatePositionsDto.legDirection ?? this.getDirectionLabel(previous, next);
+      bed.legDirection = direction;
+      if (updatePositionsDto.legPosition !== undefined) {
+        commands.push(
+          this.buildCommand(MotorType.LEG, previous, next, direction),
+        );
+      }
     }
 
     const savedBed = await this.bedRepository.save(bed);
@@ -486,10 +550,12 @@ export class BedService {
     motorType: MotorType,
     previousPosition: number,
     newPosition: number,
+    directionOverride?: BedCommandDirection,
   ): BedCommand {
     return {
       motorType,
-      direction: this.getDirectionLabel(previousPosition, newPosition),
+      direction:
+        directionOverride ?? this.getDirectionLabel(previousPosition, newPosition),
       mappedStep: this.mapPositionToStep(newPosition),
       previousPosition,
       newPosition,
@@ -501,12 +567,12 @@ export class BedService {
     newPosition: number,
   ): BedCommandDirection {
     if (newPosition > previousPosition) {
-      return 'forward';
+      return BedDirection.FORWARD;
     }
     if (newPosition < previousPosition) {
-      return 'backward';
+      return BedDirection.BACKWARD;
     }
-    return 'stop';
+    return BedDirection.STOP;
   }
 
   private mapPositionToStep(position: number): number | null {
