@@ -29,8 +29,8 @@ export enum MotorDirection {
 }
 
 export enum BedDirection {
-  FORWARD = 'forward',
-  BACKWARD = 'backward',
+  FORWARD = 'backward',
+  BACKWARD = 'forward',
   STOP = 'stop',
 }
 

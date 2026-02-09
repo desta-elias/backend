@@ -118,13 +118,13 @@ export class BedController {
 
   private getDirectionLabel(previousPosition: number, newPosition: number) {
     if (newPosition === 0) {
-      return 'backward';
-    }
-    if (newPosition > previousPosition) {
       return 'forward';
     }
-    if (newPosition < previousPosition) {
+    if (newPosition > previousPosition) {
       return 'backward';
+    }
+    if (newPosition < previousPosition) {
+      return 'forward';
     }
     return 'stop';
   }

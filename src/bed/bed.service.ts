@@ -588,10 +588,10 @@ export class BedService {
     newPosition: number,
   ): BedCommandDirection {
     if (newPosition > previousPosition) {
-      return BedDirection.FORWARD;
+      return BedDirection.BACKWARD;
     }
     if (newPosition < previousPosition) {
-      return BedDirection.BACKWARD;
+      return BedDirection.FORWARD;
     }
     return BedDirection.STOP;
   }
